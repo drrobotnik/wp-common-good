@@ -31,3 +31,57 @@ Author URI: http://www.caavadesign.com
  */
 
 require_once('rpc.php');
+
+//$rpc = new XMLRPClientWordPress('http://127.0.0.1/jpatience/xmlrpc.php', 'admin', 'keXeye8B');
+//$rpc->create_post('title', 'body', 'category');
+
+class example_help {
+	public $tabs = array(
+		// The assoc key represents the ID
+		// It is NOT allowed to contain spaces
+
+		 'EXAMPLE' => array(
+		 	 'title'   => 'TEST ME!'
+		 	,'content' => 'Content'
+		 )
+	);
+
+	static public function init() {
+		$class = __CLASS__ ;
+		new $class;
+	}
+
+	public function __construct() {
+		add_action( "load-{$GLOBALS['pagenow']}", array( $this, 'add_tabs' ), 20 );
+	}
+
+	public function add_tabs() {
+		foreach ( $this->tabs as $id => $data ) {
+			get_current_screen()->add_help_tab( array(
+				 'id'       => $id
+				,'title'    => __( $data['title'], 'some_textdomain' )
+				// Use the content only if you want to add something
+				// static on every help tab. Example: Another title inside the tab
+				,'content'  => '<p>Some stuff that stays above every help text</p>'
+				,'callback' => array( $this, 'prepare' )
+			) );
+		}
+	}
+
+	public function prepare( $screen, $tab ) {
+	    	printf(
+			 '<p>%s</p>'
+			,__(
+	    			 //$GLOBALS['pagenow']
+	    			 "future home of form."
+				,'dmb_textdomain'
+			 )
+		);
+	    	include 'templates/inquire.php';
+	}
+}
+// Always add help tabs during "load-{$GLOBALS['pagenow'}".
+// There're some edge cases, as for example on reading options screen, your
+// Help Tabs get loaded before the built in tabs. This seems to be a core error.
+global $pagenow;
+add_action( 'load-'.$pagenow, array( 'example_help', 'init' ) );

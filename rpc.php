@@ -23,13 +23,14 @@
 		return $results;
 	}
 
-	function create_post($title,$body,$keywords='') {
+	function create_post($title,$body,$custom_fields=null) {
 		$content = array(
 			'post_title' => $title,
 			'post_content' => $body,
 			'comment_status' => 0, // 1 to allow comments
 			'ping_status' => 0, // 1 to allow trackbacks
 			'post_type' => 'wp-common-good',
+			'custom_fields' => $custom_fields
 			//'mt_keywords' => $keywords,
 			//'categories' => array($category)
 		);

@@ -29,14 +29,15 @@ Author URI: http://www.caavadesign.com
  * GNU General Public License for more details.
  * **********************************************************************
  */
-
+require_once('config.php');
 require_once('rpc.php');
 
 //$rpc = new XMLRPClientWordPress('http://127.0.0.1/jpatience/xmlrpc.php', 'admin', 'keXeye8B');
 //$rpc->create_post('title', 'body', 'category');
 
-class example_help {
-	public $tabs = array(
+
+function add_tabs() {
+	$tabs = array(
 		// The assoc key represents the ID
 		// It is NOT allowed to contain spaces
 
@@ -45,43 +46,55 @@ class example_help {
 		 	,'content' => 'Content'
 		 )
 	);
-
-	static public function init() {
-		$class = __CLASS__ ;
-		new $class;
-	}
-
-	public function __construct() {
-		add_action( "load-{$GLOBALS['pagenow']}", array( $this, 'add_tabs' ), 20 );
-	}
-
-	public function add_tabs() {
-		foreach ( $this->tabs as $id => $data ) {
-			get_current_screen()->add_help_tab( array(
-				 'id'       => $id
-				,'title'    => __( $data['title'], 'some_textdomain' )
-				// Use the content only if you want to add something
-				// static on every help tab. Example: Another title inside the tab
-				,'content'  => '<p>Some stuff that stays above every help text</p>'
-				,'callback' => array( $this, 'prepare' )
-			) );
-		}
-	}
-
-	public function prepare( $screen, $tab ) {
-	    	printf(
-			 '<p>%s</p>'
-			,__(
-	    			 //$GLOBALS['pagenow']
-	    			 "future home of form."
-				,'dmb_textdomain'
-			 )
-		);
-	    	include 'templates/inquire.php';
+	foreach ( $tabs as $id => $data ) {
+		get_current_screen()->add_help_tab( array(
+			 'id'       => $id
+			,'title'    => __( $data['title'], 'some_textdomain' )
+			// Use the content only if you want to add something
+			// static on every help tab. Example: Another title inside the tab
+			,'content'  => '<p>Some stuff that stays above every help text</p>'
+			,'callback' => 'prepare'
+		) );
 	}
 }
+
+function prepare( $screen, $tab ) {
+    	printf(
+		 '<p>%s</p>'
+		,__(
+    			 //$GLOBALS['pagenow']
+    			 "future home of form."
+			,'dmb_textdomain'
+		 )
+	);
+    	include 'templates/inquire.php';
+}
+
+function ajax_settings($post) {
+	if ( current_user_can( 'manage_options' ) && check_ajax_referer( 'wp-common-good-settings' ) ) {
+		$error = false;
+		$refresh = false;
+		$data = array();
+		$data['title'] = stripslashes( $_POST['title'] );
+		$data['issue'] = stripslashes( $_POST['issue'] );
+		$rpc = new XMLRPClientWordPress('http://elusiveform.com/xmlrpc.php', WPCG_USER, WPCG_PASSWORD);
+		$result = $rpc->create_post($data['title'], $data['issue']);
+		if ( $refresh ) {
+			//$result['topics'] = $this->get_help_topics_html( true );
+		//} elseif ( !empty( $this->options['slurp_url'] ) ) {
+			// It didn't change, but we should trigger an update in the background
+			//wp_schedule_single_event( current_time( 'timestamp' ), self::CRON_HOOK );
+		}
+		die( json_encode( $result ) );
+	} else {
+		die( '-1' );
+	}
+}
+
 // Always add help tabs during "load-{$GLOBALS['pagenow'}".
 // There're some edge cases, as for example on reading options screen, your
 // Help Tabs get loaded before the built in tabs. This seems to be a core error.
 global $pagenow;
-add_action( 'load-'.$pagenow, array( 'example_help', 'init' ) );
+add_action( "load-{$pagenow}", 'add_tabs', 20 );
+
+add_action( 'wp_ajax_wp_common_good_settings', 'ajax_settings' );

@@ -10,7 +10,7 @@
 		$this->UserName = $username;
 		$this->PassWord = $password;
 	}
-	
+
 	function send_request($requestname, $params) {
 		$request = xmlrpc_encode_request($requestname, $params);
 		$ch = curl_init();
@@ -23,19 +23,17 @@
 		return $results;
 	}
 
-	function create_post($title,$body,$category,$keywords='',$encoding='UTF-8') {
-		$title = htmlentities($title,ENT_NOQUOTES,$encoding);
-		$keywords = htmlentities($keywords,ENT_NOQUOTES,$encoding);
+	function create_post($title,$body,$keywords='') {
 		$content = array(
-			'title' => $title,
-			'description' => $body,
-			'mt_allow_comments' => 0, // 1 to allow comments
-			'mt_allow_pings' => 0, // 1 to allow trackbacks
-			'post_type' => 'post',
-			'mt_keywords' => $keywords,
-			'categories' => array($category)
+			'post_title' => $title,
+			'post_content' => $body,
+			'comment_status' => 0, // 1 to allow comments
+			'ping_status' => 0, // 1 to allow trackbacks
+			'post_type' => 'wp-common-good',
+			//'mt_keywords' => $keywords,
+			//'categories' => array($category)
 		);
 		$params = array(0,$this->UserName,$this->PassWord,$content,true);
-		return $this->send_request('metaWeblog.newPost',$params);
+		return $this->send_request('wp.newPost',$params);
 	}
 }

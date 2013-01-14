@@ -41,8 +41,8 @@ function add_tabs() {
 		// The assoc key represents the ID
 		// It is NOT allowed to contain spaces
 
-		 'EXAMPLE' => array(
-		 	 'title'   => 'TEST ME!'
+		 'wpcg-inquire' => array(
+		 	 'title'   => 'Inquire'
 		 	,'content' => 'Content'
 		 )
 	);
@@ -52,7 +52,7 @@ function add_tabs() {
 			,'title'    => __( $data['title'], 'some_textdomain' )
 			// Use the content only if you want to add something
 			// static on every help tab. Example: Another title inside the tab
-			,'content'  => '<p>Some stuff that stays above every help text</p>'
+			,'content'  => '<p></p>'
 			,'callback' => 'prepare'
 		) );
 	}
@@ -63,7 +63,7 @@ function prepare( $screen, $tab ) {
 		 '<p>%s</p>'
 		,__(
     			 //$GLOBALS['pagenow']
-    			 "future home of form."
+    			 ""
 			,'dmb_textdomain'
 		 )
 	);
@@ -77,7 +77,7 @@ function ajax_settings($post) {
 		$data = array();
 		$data['title'] = stripslashes( $_POST['title'] );
 		$data['issue'] = stripslashes( $_POST['issue'] );
-		$rpc = new XMLRPClientWordPress('http://elusiveform.com/xmlrpc.php', WPCG_USER, WPCG_PASSWORD);
+		$rpc = new XMLRPClientWordPress(WPCG_SITE_URL.'/xmlrpc.php', WPCG_USER, WPCG_PASSWORD);
 		$result = $rpc->create_post($data['title'], $data['issue']);
 		if ( $refresh ) {
 			//$result['topics'] = $this->get_help_topics_html( true );

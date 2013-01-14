@@ -5,8 +5,11 @@
 <h2><?php _e( 'Ask Away', 'wp-common-good' ); ?></h2>
 
 <p><?php _e( 'Your question will go directly to us where we will process the issue and respond asap. Afterwards the information will be found here for future reference.', 'wp-common-good' ); ?></p>
-
-<p><input type="text" name="cg-title" id="cg-title" placeholder="Title" value="" /></p>
+<div id="title-wrap" class="input-text-wrap">
+			<label id="title-prompt-text" for="title" class="prompt">Enter title here</label>
+			<input type="text" name="cg-title" id="cg-title" placeholder="Title" class="widefat" value="" />
+		</div>
+<p></p>
 <?php 
 $settings = array(
 	'media_buttons' => false,

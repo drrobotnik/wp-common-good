@@ -92,27 +92,42 @@ function ajax_settings($post) {
 }
 function global_custom_options() {
 ?>
+<style>
+	#wpcg-instructions{display:none;}
+</style>
 	<div class="wrap">
 		<h2>WP Common Good Options</h2>
 
 		<p>Success! Now that you've installed our humble plug-in. What type of install is this?</p>
 		<form method="post" action="options.php">
 			<?php wp_nonce_field('update-options');
-			$admin_install = empty( get_option('wpcg-install_type') ) ? '' : 'checked="checked"';
+			$admin_install = empty( get_option('wpcg_install_type') ) ? '' : 'checked="checked"';
 			 ?>
-			<p><input type="checkbox" name="wpcg-install_type" value="admin" <?php echo $admin_install; ?>> I'm the knowledgebase Admin.</p>
-			<p><strong>Twitter ID:</strong><br />
-				<input type="text" name="twitterid" size="45" value="<?php echo get_option('twitterid'); ?>" />
+			<p><label for="wpcg_install_type"><input type="checkbox" name="wpcg_install_type" id="wpcg_install_type" value="admin" <?php echo $admin_install; ?>> I build Websites, and my clients come to me with questions.</label></p>
+			<div id="wpcg-options">
+			<p><strong>The website where you submit inquiries to:</strong><br />
+				<input type="text" name="wpcg_inquiries" size="45" value="<?php echo get_option('wpcg_inquiries_url'); ?>" />
 			</p>
-				<p><strong>Facebook Page Links:</strong><br />
-		<input type="text" name="fb_link" size="45" value="<?php echo get_option('fb_link'); ?>" />
-	</p>
-
+		</div>
+		<div id="wpcg-instructions"><p>Point your client installs to <strong><?php echo home_url(); ?></strong>.</p></div>
 			<p><input type="submit" name="Submit" value="Store Options" /></p>
 			<input type="hidden" name="action" value="update" />
-				<input type="hidden" name="page_options" value="twitterid,fb_link" />
+				<input type="hidden" name="page_options" value="wpcg_inquiries_url,wpcg_install_type" />
 		</form>
 	</div>
+	<script>
+	jQuery(document).ready(function($) {
+		$('#wpcg_install_type').click(function(){
+			if( $('#wpcg_install_type').is(':checked') ) {
+				$('#wpcg-options').hide();
+				$('#wpcg-instructions').show();
+			}else{
+				$('#wpcg-options').show();
+				$('#wpcg-instructions').hide();
+			}
+		});
+	});
+	</script>
 <?php
 }
 function add_global_custom_options() {
